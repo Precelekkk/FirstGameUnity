@@ -1,0 +1,59 @@
+using UnityEngine;
+
+public class CameraFollow : MonoBehaviour
+{
+    public GameObject baitPrefab; // The bait prefab to follow
+    public Transform player; // The player object to follow
+    public float smoothSpeed = 0.125f; // The smoothness of the camera movement
+    public Vector3 offset; // The offset from the target
+
+    private Transform target; // The transform of the current bait
+
+    public bool IsBaitOnScene()
+    {
+        GameObject[] baitObjects = GameObject.FindGameObjectsWithTag("Bait");
+        if (baitObjects.Length > 0)
+        {
+            target = baitObjects[0].transform; // Assign the first bait found
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void Update()
+    {
+        if (IsBaitOnScene())
+        {
+        //    Debug.Log("Bait is present in the scene.");
+
+            if (target != null)
+            {
+                Vector3 desiredPosition = target.position + offset;
+                Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+                transform.position = new Vector3(smoothedPosition.x, smoothedPosition.y, transform.position.z);
+            }
+            else
+            {
+        //        Debug.LogWarning("Bait target is null.");
+            }
+        }
+        else
+        {
+        //    Debug.Log("Bait is not present in the scene.");
+
+            if (player != null)
+            {
+                Vector3 desiredPosition = player.position + offset;
+                Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
+                transform.position = new Vector3(smoothedPosition.x, smoothedPosition.y, transform.position.z);
+            }
+            else
+            {
+        //        Debug.LogWarning("Player object is null.");
+            }
+        }
+    }
+}
