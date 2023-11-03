@@ -1,0 +1,88 @@
+using UnityEngine;
+
+public class Interactions : MonoBehaviour
+{
+    public GameObject interactPrompt;   // The UI element for the interaction prompt
+    public GameObject roodPrefab;       // Reference to the "Rood" prefab
+    public GameObject roodPlayerPrefab; // Reference to the "Rood_Player" prefab
+    public ThrowController throwController; // Reference to the ThrowController script
+
+    private bool playerInRange;         // Flag to track if the player is in range
+    private bool hasRoodSpawned;       // Flag to track if "Rood" prefab has been spawned
+
+    void Start()
+    {
+        HideInteractPrompt();
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = true;
+            ShowInteractPrompt();
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+            HideInteractPrompt();
+        }
+    }
+
+    void Update()
+    {
+        // Check for player input (e.g., pressing 'E') to interact
+        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !hasRoodSpawned)
+        {
+            // Perform the interaction here
+            Debug.Log("Interacting with object: " + gameObject.name);
+
+            // Spawn the "Rood" prefab if it exists and hasn't been spawned before
+            if (roodPrefab != null)
+            {
+                Instantiate(roodPrefab, transform.position, transform.rotation);
+                hasRoodSpawned = true; // Set the flag to true to prevent spawning another "Rood" prefab
+            }
+
+            // Activate the "Rood_Player" prefab if it exists
+            if (roodPlayerPrefab != null)
+            {
+                roodPlayerPrefab.SetActive(true);
+            }
+
+            // Set the "hasRood" flag to true in the ThrowController
+            if (throwController != null)
+            {
+                throwController.SetHasRood(true);
+            }
+
+            // Enable the slider when the player has the "Rood"
+            if (throwController != null)
+            {
+                throwController.EnableSlider();
+            }
+        }
+
+        // ... (Other code and conditions)
+    }
+
+    void ShowInteractPrompt()
+    {
+        if (interactPrompt != null && roodPrefab != null && !hasRoodSpawned)
+        {
+            interactPrompt.SetActive(true);
+        }
+    }
+
+    void HideInteractPrompt()
+    {
+        if (interactPrompt != null)
+        {
+            interactPrompt.SetActive(false);
+        }
+    }
+}
