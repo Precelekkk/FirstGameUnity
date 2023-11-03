@@ -1,0 +1,17 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class TeleportRestaurant : MonoBehaviour
+{
+    public string targetSceneName = "Restaurant"; // Set this to the name of your restaurant scene.
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player")) // Adjust the tag as needed.
+        {
+            // Load the target scene when the player enters the trigger zone.
+            SceneManager.LoadScene(targetSceneName);
+            Debug.Log("Zmiana");
+        }
+    }
+}
