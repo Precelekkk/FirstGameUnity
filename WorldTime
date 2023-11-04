@@ -1,0 +1,35 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace MK
+{
+    public class WorldTime : MonoBehaviour
+    {
+        public event EventHandler<TimeSpan> WorldTimeChanged;
+
+        [SerializeField]
+        private float _hourLengthInSeconds = 3f; // 1 hour every 3 seconds
+        private TimeSpan _currentTime = TimeSpan.Zero;
+
+        private void Start()
+        {
+            StartCoroutine(AdvanceTime());
+        }
+
+        private IEnumerator AdvanceTime()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(_hourLengthInSeconds);
+
+                // Add 1 hour to the current time
+                _currentTime = _currentTime.Add(TimeSpan.FromHours(1));
+
+                // Trigger the WorldTimeChanged event
+                WorldTimeChanged?.Invoke(this, _currentTime);
+            }
+        }
+    }
+}
