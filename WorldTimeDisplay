@@ -1,0 +1,45 @@
+using System;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace MK
+{
+    public class WorldTimeDisplay : MonoBehaviour
+    {
+        [SerializeField]
+        private Text worldTimeText;
+
+        [SerializeField]
+        private WorldTime wordTime; // Reference to your WordTime script
+
+        private void Awake()
+        {
+            // Subscribe to the WorldTimeChanged event to update the UI text when time changes.
+            if (wordTime != null)
+            {
+                wordTime.WorldTimeChanged += OnWorldTimeChanged;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from the WorldTimeChanged event when the script is destroyed.
+            if (wordTime != null)
+            {
+                wordTime.WorldTimeChanged -= OnWorldTimeChanged;
+            }
+        }
+
+        private void OnWorldTimeChanged(object sender, TimeSpan newTime)
+        {
+            // Format the TimeSpan to display hours and minutes (HH:mm).
+            string formattedTime = string.Format("{0:D2}:{1:D2}", newTime.Hours, newTime.Minutes);
+
+            // Update the UI Text component with the formatted time.
+            if (worldTimeText != null)
+            {
+                worldTimeText.text = formattedTime;
+            }
+        }
+    }
+}
