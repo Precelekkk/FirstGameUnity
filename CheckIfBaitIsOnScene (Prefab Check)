@@ -1,0 +1,22 @@
+using UnityEngine;
+
+public class BaitOnSceneCheck : MonoBehaviour
+{
+    private void Start()
+    {
+        // Check if a bait prefab is already in the scene
+        GameObject[] baitPrefabs = GameObject.FindGameObjectsWithTag("Bait"); // Change the tag to match your bait prefab's tag
+
+        if (baitPrefabs.Length > 1)
+        {
+            // If there's more than one bait prefab, destroy the newly spawned one
+            Destroy(gameObject);
+            Debug.Log("Bait prefab already exists in the scene. Destroying duplicate.");
+        }
+        else
+        {
+            // Otherwise, keep this bait prefab
+            Debug.Log("Bait prefab spawned.");
+        }
+    }
+}
