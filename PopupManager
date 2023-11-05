@@ -1,0 +1,138 @@
+using UnityEngine;
+using UnityEngine.UI; // Import the Unity UI namespace
+
+
+namespace MK
+{
+    public class PopupManager : MonoBehaviour
+    {
+        public WorldTime worldTime; // Reference to your WordTime script
+        public GameObject morningPopup;
+        public GameObject afternoonPopup;
+        public GameObject eveningPopup;
+        private int daysPassed = 0;
+        public float popupDuration = 5.0f; // Duration in seconds for which the popup will be displayed
+        private float popupTimer; // Timer to keep track of how long the popup has been displayed
+        public Text dayCounterText; // You need to assign this in the Inspector
+
+        private void Start()
+        {
+            // Make sure you have valid references to WordTime and the pop-up game objects
+            if (worldTime == null || morningPopup == null || afternoonPopup == null || eveningPopup == null)
+            {
+                
+                return;
+            }
+
+            // Subscribe to the WorldTimeChanged event
+            worldTime.WorldTimeChanged += OnWorldTimeChanged;
+            
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from the WorldTimeChanged event when the script is destroyed
+            if (worldTime != null)
+            {
+                worldTime.WorldTimeChanged -= OnWorldTimeChanged;
+                
+            }
+        }
+
+        private void OnWorldTimeChanged(object sender, System.TimeSpan newTime)
+        {
+            
+            // Check the current time and show the appropriate pop-up message
+            if (newTime.Hours == 0 && newTime.Minutes == 0)
+            {
+                IncrementDayCounter(); // Increment the day counter
+            }
+            else if (newTime.Hours == 8 && newTime.Minutes == 0)
+            {
+                ShowMorningPopup();
+            }
+            else if (newTime.Hours == 12 && newTime.Minutes == 0)
+            {
+                
+                ShowAfternoonPopup();
+            }
+            else if (newTime.Hours == 18 && newTime.Minutes == 0)
+            {
+                
+                ShowEveningPopup();
+            }
+            else
+            {
+                
+            }
+        }
+
+        private void Update()
+        {
+            // Check if a popup is active and if the popup timer has exceeded the duration
+            if (morningPopup.activeSelf || afternoonPopup.activeSelf || eveningPopup.activeSelf)
+            {
+                popupTimer += Time.deltaTime;
+
+                if (popupTimer >= popupDuration)
+                {
+                    // Hide the popup after the specified duration
+                    HideAllPopups();
+                }
+            }
+        }
+
+        private void ShowMorningPopup()
+        {
+            // Show the morning pop-up message and hide others
+            morningPopup.SetActive(true);
+            Debug.Log("Morning popup shown.");
+            afternoonPopup.SetActive(false);
+            eveningPopup.SetActive(false);
+            popupTimer = 0f; // Reset the popup timer
+        }
+
+        private void ShowAfternoonPopup()
+        {
+            // Show the afternoon pop-up message and hide others
+            morningPopup.SetActive(false);
+            afternoonPopup.SetActive(true);
+            Debug.Log("Afternoon popup shown.");
+            eveningPopup.SetActive(false);
+            popupTimer = 0f; // Reset the popup timer
+        }
+
+        private void ShowEveningPopup()
+        {
+            // Show the evening pop-up message and hide others
+            morningPopup.SetActive(false);
+            afternoonPopup.SetActive(false);
+            Debug.Log("Evening popup shown.");
+            eveningPopup.SetActive(true);
+            popupTimer = 0f; // Reset the popup timer
+        }
+
+        private void HideAllPopups()
+        {
+            // Hide all pop-up messages
+            morningPopup.SetActive(false);
+            afternoonPopup.SetActive(false);
+            eveningPopup.SetActive(false);
+        }
+
+                private void IncrementDayCounter()
+        {
+            daysPassed++;
+            Debug.Log("New Day added to counter");
+            UpdateDayCounterText();
+        }
+
+            private void UpdateDayCounterText()
+        {
+            if (dayCounterText != null)
+            {
+                dayCounterText.text = "Days: " + daysPassed;
+            }
+        }
+    }
+}
