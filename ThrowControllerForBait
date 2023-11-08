@@ -1,0 +1,104 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ThrowController : MonoBehaviour
+{
+    public Slider throwStrengthSlider;   // Reference to the UI Slider for throw strength
+    public float minThrowStrength = 5.0f; // Minimum throw strength
+    public float maxThrowStrength = 7.0f; // Maximum throw strength
+    public GameObject baitPrefab;        // Reference to the bait prefab
+
+    private float currentThrowStrength;  // Current throw strength
+    private bool hasRood = false;        // Flag to track if the player has the "Rood"
+
+    void Start()
+    {
+        // Initialize the throw strength to the minimum value
+        currentThrowStrength = minThrowStrength;
+
+        // Disable the slider at the start
+        DisableSlider();
+    }
+
+    void Update()
+    {
+        // Check for player input (e.g., holding the left mouse button to charge)
+        if (hasRood && Input.GetMouseButton(0))
+        {
+            // Increase the throw strength within the specified range
+            if (currentThrowStrength < maxThrowStrength)
+            {
+                currentThrowStrength += Time.deltaTime; // Adjust this value for desired charging speed
+                throwStrengthSlider.value = currentThrowStrength; // Update the UI Slider
+            }
+        }
+
+        // Check for releasing the left mouse button to perform the throw
+        if (hasRood && Input.GetMouseButtonUp(0))
+        {
+            // Perform the throw action using the currentThrowStrength
+            ThrowBait(currentThrowStrength);
+
+            // Reset the throw strength and update the UI Slider
+            currentThrowStrength = minThrowStrength;
+            throwStrengthSlider.value = currentThrowStrength;
+        }
+    }
+
+    void ThrowBait(float strength)
+    {
+        // Calculate the direction to throw the bait based on the player's facing direction
+        Vector2 throwDirection = Vector2.left; // Throw to the left by default
+
+        // Check the player's facing direction
+        if (transform.localScale.x > 0) // Assuming positive scale.x means facing right
+        {
+            throwDirection = Vector2.right; // If facing right, throw to the right
+        }
+
+        // Create and spawn the bait at the player's position
+        GameObject bait = Instantiate(baitPrefab, transform.position, Quaternion.identity);
+
+        // Get the Rigidbody2D component of the bait
+        Rigidbody2D baitRigidbody = bait.GetComponent<Rigidbody2D>();
+
+        // Apply force to the bait in the calculated direction with a magnitude based on the strength
+        baitRigidbody.AddForce(throwDirection * strength, ForceMode2D.Impulse);
+
+        Debug.Log("Throwing with strength: " + strength);
+    }
+
+    // Add a function to enable the slider
+    public void EnableSlider()
+    {
+        if (throwStrengthSlider != null)
+        {
+            // Only enable the slider if the player has the "Rood"
+            if (hasRood)
+            {
+                throwStrengthSlider.gameObject.SetActive(true);
+                Debug.Log("Slider enabled");
+            }
+        }
+    }
+
+    // Add a function to disable the slider
+    public void DisableSlider()
+    {
+        if (throwStrengthSlider != null)
+        {
+            throwStrengthSlider.gameObject.SetActive(false);
+            Debug.Log("Slider disabled");
+        }
+    }
+
+    
+
+    
+
+    // Add a function to set the "hasRood" flag
+    public void SetHasRood(bool value)
+    {
+        hasRood = value;
+    }
+}
